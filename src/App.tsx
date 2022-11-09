@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { useSetRecoilState } from "recoil";
+import { Home } from "./Home";
+import { isBigState, resizeState } from "./utils/atom";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [screen, setScreen] = useState(window.outerWidth);
+  const setSize = useSetRecoilState(resizeState);
+  const setBig = useSetRecoilState(isBigState);
+  useEffect(() => {
+    const handleResize = () => {
+      setScreen(window.outerWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    if (screen >= 980) {
+      setSize("Web");
+    } else if (screen <= 700 && screen > 560) {
+      setSize("Mobile");
+    } else if (screen <= 560) {
+      setSize("Small");
+    } else {
+      setSize("Mid");
+    }
+    if (screen > 560) {
+      setBig("Big");
+    } else {
+      setBig("Small");
+    }
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  });
+  return <Home />;
 }
 
 export default App;
